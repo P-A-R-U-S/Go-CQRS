@@ -5,6 +5,8 @@ Implementation of CQRS Pattern for Go language.
 ## Getting Started
 
 Project distibuted as open-source example and you can can copy and modify code snippet based on you need or requirements.
+Project contains following parts:
+- EventBus
 
 ## Contributing
 
@@ -27,7 +29,7 @@ See also the list of [contributors](https://github.com/P-A-R-U-S/Golang-CQRS/con
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
+This project is licensed under the MIT License - see the [LICENSE.md](https://opensource.org/licenses/MIT) file for details
 
 ## Acknowledgments
 

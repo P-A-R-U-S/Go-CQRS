@@ -1,7 +1,7 @@
 package Handlers
 
 type Handler interface {
-	Name() string
+	Event() string
 	Execute(... interface{}) error
 	OnSubscribe()
 	OnUnsubscribe()

@@ -47,7 +47,7 @@ func (b *eventBus) Subscribe(h handlers.Handler) error {
 	defer b.mtx.Unlock()
 
 	h.OnSubscribe()
-	b.handlers[h.Name()] = append(b.handlers[h.Name()], h)
+	b.handlers[h.Event()] = append(b.handlers[h.Event()], h)
 
 	return nil
 }

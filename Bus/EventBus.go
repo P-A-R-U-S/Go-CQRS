@@ -6,6 +6,7 @@ import (
 	"sync"
 	"github.com/pkg/errors"
 	handlers "Golang-CQRS/Handlers"
+	"log"
 )
 
 // EventBus implements publish/subscribe pattern: https://en.wikipedia.org/wiki/Publish%E2%80%93subscribe_pattern
@@ -31,13 +32,31 @@ func (b *eventBus) Publish(eventName string, args ...interface{}) {
 		rArgs := buildHandlerArgs(args)
 
 		for _, h := range hs {
-			go h.Execute(rArgs)
+
+			go func() {
+				//Handle Panic in Handler.Execute.
+				defer func() {
+					if err := recover(); err != nil {
+						log.Printf("Panic in Publish: %s", err)
+					}
+				}()
+				h.Execute(rArgs)
+			}()
 		}
 	}
 }
 
 // Subscribe Handler
 func (b *eventBus) Subscribe(h handlers.Handler) error {
+	b.mtx.Lock()
+	//Handle Panic on adding new handler
+	defer func() {
+		b.mtx.Unlock()
+		if err := recover(); err != nil {
+			log.Printf("Panic in Subscribe: %s", err)
+		}
+	}()
+
 	if h == nil {
 		return errors.New("Handler can not be nil.")
 	}
@@ -45,9 +64,6 @@ func (b *eventBus) Subscribe(h handlers.Handler) error {
 	if len(h.Event()) == 0 {
 		return errors.New("Handlers with empty Event are not allowed.")
 	}
-
-	b.mtx.Lock()
-	defer b.mtx.Unlock()
 
 	h.OnSubscribe()
 	b.handlers[h.Event()] = append(b.handlers[h.Event()], h)
@@ -58,7 +74,13 @@ func (b *eventBus) Subscribe(h handlers.Handler) error {
 // Unsubscribe Handler
 func (b *eventBus) Unsubscribe(eventName string) error {
 	b.mtx.Lock()
-	defer b.mtx.Unlock()
+	//Handle Panic on adding new handler
+	defer func() {
+		b.mtx.Unlock()
+		if err := recover(); err != nil {
+			log.Printf("Panic in Unsubscribe: %s", err)
+		}
+	}()
 
 	if _, ok := b.handlers[eventName]; ok {
 

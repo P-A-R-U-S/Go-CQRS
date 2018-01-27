@@ -5,26 +5,28 @@ import (
 	bus "Golang-CQRS/Bus"
 	"time"
 	"github.com/pkg/errors"
+	"fmt"
 )
 
 const EventFake1 = "_EventFake1"
 const EventFake2 = "_EventFake2"
 
 type FakeHandler1 struct {
-	_event string
+	_name, _event string
 	_isOnSubscribeFired, _isOnUnsubscribeFired, _isExecuteFired bool
 	_isPanicOnEvent, _isPanicOnOnSubscribe, _isPanicOnOnUnsubscribe, _isPanicOnExecute bool
 }
 
 func (h *FakeHandler1) Event() string {
+	if h._isPanicOnEvent {
+		panic(errors.New( h._event  + ":Panic in Event"))
+	}
 
 	if len(h._event) > 0 {
 		return h._event
 	}
 
-	if h._isPanicOnEvent {
-		panic(errors.New( h._event  + ":Panic in Event"))
-	}
+
 	return EventFake1
 }
 func (h *FakeHandler1) Execute(... interface{}) error {
@@ -33,6 +35,9 @@ func (h *FakeHandler1) Execute(... interface{}) error {
 	}
 
 	h._isExecuteFired = true
+	fmt.Printf("Executed: %s : %s", h._name, h._event)
+	fmt.Println()
+
 	return nil
 }
 func (h *FakeHandler1) OnSubscribe() {
@@ -51,18 +56,18 @@ func (h *FakeHandler1) OnUnsubscribe() {
 }
 
 type FakeHandler2 struct {
-	_event                                                      						string
+	_name, _event                                                      					string
 	_isOnSubscribeFired, _isOnUnsubscribeFired, _isExecuteFired 						bool
 	_isPanicOnEvent, _isPanicOnOnSubscribe, _isPanicOnOnUnsubscribe, _isPanicOnExecute 	bool
 }
 
 func (h *FakeHandler2) Event() string {
-	if len(h._event) > 0 {
-		return h._event
-	}
-
 	if h._isPanicOnEvent {
 		panic(errors.New( h._event  + ":Panic in Event"))
+	}
+
+	if len(h._event) > 0 {
+		return h._event
 	}
 
 	return ""
@@ -73,6 +78,10 @@ func (h *FakeHandler2) Execute(... interface{}) error {
 	}
 
 	h._isExecuteFired = true
+
+	fmt.Printf("Executed: %s : %s", h._name, h._event)
+	fmt.Println()
+
 	return nil
 }
 func (h *FakeHandler2) OnSubscribe() {
@@ -192,7 +201,29 @@ func Test_Should_call_handler_by_event(t *testing.T)  {
 
 }
 
+func Test_Should_call_all_handlers_with_same_event(t *testing.T)  {
+	eventBus := bus.New()
 
+	h1 := &FakeHandler1{_name: "Handler1", _event:EventFake1}
+	h2 := &FakeHandler2{_name: "Handler2", _event:EventFake1}
+
+	eventBus.Subscribe(h1)
+	eventBus.Subscribe(h2)
+	eventBus.Publish(EventFake1, 1,2,3,4,5,67,8,9)
+
+	//Wait go routine complete
+	time.Sleep(time.Second)
+
+	//Execute should  be call for FakeHandler1
+	if !h1._isExecuteFired  {
+		t.Error("Test1: Execute should be call for FakeHandler1")
+	}
+
+	//Execute should be call for FakeHandler2
+	if !h2._isExecuteFired  {
+		t.Error("Test1: Execute should be call for FakeHandler2")
+	}
+}
 
 func Test_Should_not_panic_when_Unsubscribe(t *testing.T)  {
 	eventBus := bus.New()
@@ -205,5 +236,25 @@ func Test_Should_not_panic_when_Unsubscribe(t *testing.T)  {
 
 	if !h._isOnSubscribeFired  {
 		t.Fail()
+	}
+}
+
+
+func Test_Should_fail_when_one_of_handler_panic_on_Event(t *testing.T) {
+	eventBus := bus.New()
+
+	h1 := &FakeHandler1{_event:EventFake1}
+	h2 := &FakeHandler2{_event:EventFake2, _isPanicOnEvent: true}
+
+	eventBus.Subscribe(h1)
+	eventBus.Subscribe(h2)
+	eventBus.Publish(EventFake1, 1,2,3,4,5,67,8,9)
+
+	//Wait go routine complete
+	time.Sleep(time.Second)
+
+	//Execute should NOT be call for FakeHandler1
+	if !h1._isExecuteFired  {
+		t.Error("Test1: Execute should NOT be call for FakeHandler1")
 	}
 }

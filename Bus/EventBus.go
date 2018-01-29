@@ -33,7 +33,7 @@ func (b *eventBus) Publish(eventName string, args ...interface{}) {
 
 		for _, h := range hs {
 
-			// In case of Closure H variable will be reassigned before ever executed by goroutine.
+			// In case of Closure "h" variable will be reassigned before ever executed by goroutine.
 			// Because if this you need to save value into variable and use this variable in closure.
 			h_in_goroutine := h
 
@@ -41,7 +41,7 @@ func (b *eventBus) Publish(eventName string, args ...interface{}) {
 				//Handle Panic in Handler.Execute.
 				defer func() {
 					if err := recover(); err != nil {
-						log.Printf("Panic in Publish: %s", err)
+						log.Printf("Panic in EventBus.Publish: %s", err)
 					}
 				}()
 				h_in_goroutine.Execute(rArgs)
@@ -57,7 +57,7 @@ func (b *eventBus) Subscribe(h handlers.Handler) error {
 	defer func() {
 		b.mtx.Unlock()
 		if err := recover(); err != nil {
-			log.Printf("Panic in Subscribe: %s", err)
+			log.Printf("Panic in EventBus.Subscribe: %s", err)
 		}
 	}()
 
@@ -82,7 +82,7 @@ func (b *eventBus) Unsubscribe(eventName string) error {
 	defer func() {
 		b.mtx.Unlock()
 		if err := recover(); err != nil {
-			log.Printf("Panic in Unsubscribe: %s", err)
+			log.Printf("Panic in EventBus.Unsubscribe: %s", err)
 		}
 	}()
 

@@ -4,99 +4,7 @@ import (
 	"testing"
 	bus "Golang-CQRS/Bus"
 	"time"
-	"github.com/pkg/errors"
-	"fmt"
 )
-
-const EventFake1 = "_EventFake1"
-const EventFake2 = "_EventFake2"
-
-type FakeHandler1 struct {
-	_name, _event string
-	_isOnSubscribeFired, _isOnUnsubscribeFired, _isExecuteFired bool
-	_isPanicOnEvent, _isPanicOnOnSubscribe, _isPanicOnOnUnsubscribe, _isPanicOnExecute bool
-}
-
-func (h *FakeHandler1) Event() string {
-	if h._isPanicOnEvent {
-		panic(errors.New( h._event  + ":Panic in Event"))
-	}
-
-	if len(h._event) > 0 {
-		return h._event
-	}
-
-
-	return EventFake1
-}
-func (h *FakeHandler1) Execute(... interface{}) error {
-	if h._isPanicOnExecute {
-		panic(errors.New( h._event  + ":Panic in Execute"))
-	}
-
-	h._isExecuteFired = true
-	fmt.Printf("Executed: %s : %s", h._name, h._event)
-	fmt.Println()
-
-	return nil
-}
-func (h *FakeHandler1) OnSubscribe() {
-	if h._isPanicOnOnSubscribe {
-		panic(errors.New( h._event  + ":Panic in OnSubscribe"))
-	}
-
-	h._isOnSubscribeFired = true
-}
-func (h *FakeHandler1) OnUnsubscribe() {
-	if h._isPanicOnOnUnsubscribe {
-		panic(errors.New( h._event  + ":Panic in OnUnsubscribe"))
-	}
-
-	h._isOnUnsubscribeFired = true
-}
-
-type FakeHandler2 struct {
-	_name, _event                                                      					string
-	_isOnSubscribeFired, _isOnUnsubscribeFired, _isExecuteFired 						bool
-	_isPanicOnEvent, _isPanicOnOnSubscribe, _isPanicOnOnUnsubscribe, _isPanicOnExecute 	bool
-}
-
-func (h *FakeHandler2) Event() string {
-	if h._isPanicOnEvent {
-		panic(errors.New( h._event  + ":Panic in Event"))
-	}
-
-	if len(h._event) > 0 {
-		return h._event
-	}
-
-	return ""
-}
-func (h *FakeHandler2) Execute(... interface{}) error {
-	if h._isPanicOnExecute{
-		panic(errors.New( h._event  + ":Panic in Execute"))
-	}
-
-	h._isExecuteFired = true
-
-	fmt.Printf("Executed: %s : %s", h._name, h._event)
-	fmt.Println()
-
-	return nil
-}
-func (h *FakeHandler2) OnSubscribe() {
-	if h._isPanicOnOnSubscribe{
-		panic(errors.New( h._event  + ":Panic in OnSubscribe"))
-	}
-
-	h._isOnSubscribeFired = true
-}
-func (h *FakeHandler2) OnUnsubscribe() {
-	if h._isPanicOnOnUnsubscribe{
-		panic(errors.New( h._event  + ":Panic in OnUnsubscribe"))
-	}
-	h._isOnUnsubscribeFired = true
-}
 
 func Test_Should_not_panic_when_create_instance_of_EventBus(t *testing.T) {
 	bus := bus.New()
@@ -240,21 +148,147 @@ func Test_Should_not_panic_when_Unsubscribe(t *testing.T)  {
 }
 
 
-func Test_Should_fail_when_one_of_handler_panic_on_Event(t *testing.T) {
+func Test_Should_not_fail_when_one_of_handler_panic_on_Event(t *testing.T) {
 	eventBus := bus.New()
 
 	h1 := &FakeHandler1{_event:EventFake1}
 	h2 := &FakeHandler2{_event:EventFake2, _isPanicOnEvent: true}
 
+
 	eventBus.Subscribe(h1)
 	eventBus.Subscribe(h2)
 	eventBus.Publish(EventFake1, 1,2,3,4,5,67,8,9)
+	eventBus.Publish(EventFake2, 1,2,3,4,5,67,8,9)
 
 	//Wait go routine complete
 	time.Sleep(time.Second)
 
 	//Execute should NOT be call for FakeHandler1
 	if !h1._isExecuteFired  {
-		t.Error("Test1: Execute should NOT be call for FakeHandler1")
+		t.Error("Test1: Execute should be call for FakeHandler1")
+	}
+
+	//Execute should NOT be call for FakeHandler1
+	if h2._isExecuteFired  {
+		t.Error("Test1: Execute should NOT be call for FakeHandler2")
+	}
+}
+
+func Test_Should_not_fail_when_one_of_handler_panic_on_OnSubscribe(t *testing.T) {
+	eventBus := bus.New()
+
+	h1 := &FakeHandler1{_event:EventFake1}
+	h2 := &FakeHandler2{_event:EventFake2, _isPanicOnOnSubscribe: true}
+
+	eventBus.Subscribe(h1)
+	eventBus.Subscribe(h2)
+
+	eventBus.Publish(EventFake1, 1,2,3,4,5,67,8,9)
+	eventBus.Publish(EventFake2, 1,2,3,4,5,67,8,9)
+
+	//Wait go routine complete
+	time.Sleep(time.Second)
+
+	//OnSubscribe should NOT be call for FakeHandler1
+	if !h1._isOnSubscribeFired  {
+		t.Error("Test1: Execute should be call for FakeHandler1")
+	}
+
+	//Execute should NOT be call for FakeHandler1
+	if !h1._isExecuteFired  {
+		t.Error("Test1: Execute should be call for FakeHandler1")
+	}
+
+	//OnSubscribe should be call for FakeHandler2
+	if h2._isOnSubscribeFired  {
+		t.Error("Test1: Execute should be call for FakeHandler2")
+	}
+
+	//Execute should NOT be call for FakeHandler2
+	if h2._isExecuteFired  {
+		t.Error("Test1: Execute should NOT be call for FakeHandler2")
+	}
+}
+
+func Test_Should_not_fail_when_one_of_handler_panic_on_Execute(t *testing.T) {
+	eventBus := bus.New()
+
+	h1 := &FakeHandler1{_event:EventFake1}
+	h2 := &FakeHandler2{_event:EventFake2, _isPanicOnExecute: true}
+
+	eventBus.Subscribe(h1)
+	eventBus.Subscribe(h2)
+	eventBus.Publish(EventFake1, 1,2,3,4,5,67,8,9)
+	eventBus.Publish(EventFake2, 1,2,3,4,5,67,8,9)
+
+	//Wait go routine complete
+	time.Sleep(time.Second)
+
+	//OnSubscribe should NOT be call for FakeHandler1
+	if !h1._isOnSubscribeFired  {
+		t.Error("Test1: Execute should be call for FakeHandler1")
+	}
+
+	//Execute should NOT be call for FakeHandler1
+	if !h1._isExecuteFired  {
+		t.Error("Test1: Execute should be call for FakeHandler1")
+	}
+
+	//OnSubscribe should be call for FakeHandler2
+	if !h2._isOnSubscribeFired  {
+		t.Error("Test1: Execute should be call for FakeHandler2")
+	}
+
+	//Execute should NOT be call for FakeHandler2
+	if h2._isExecuteFired  {
+		t.Error("Test1: Execute should NOT be call for FakeHandler2")
+	}
+}
+
+func Test_Should_not_fail_when_one_of_handler_panic_on_Unsubscribe(t *testing.T) {
+	eventBus := bus.New()
+
+	h1 := &FakeHandler1{_event:EventFake1}
+	h2 := &FakeHandler2{_event:EventFake2, _isPanicOnOnUnsubscribe: true}
+
+	eventBus.Subscribe(h1)
+	eventBus.Subscribe(h2)
+	eventBus.Publish(EventFake1, 1,2,3,4,5,67,8,9)
+	eventBus.Publish(EventFake2, 1,2,3,4,5,67,8,9)
+	eventBus.Unsubscribe(EventFake1)
+	eventBus.Unsubscribe(EventFake2)
+
+
+	//Wait go routine complete
+	time.Sleep(time.Second)
+
+	//OnSubscribe should NOT be call for FakeHandler1
+	if !h1._isOnSubscribeFired  {
+		t.Error("Test1: OnSubscribe should be call for FakeHandler1")
+	}
+
+	//Execute should NOT be call for FakeHandler1
+	if !h1._isExecuteFired  {
+		t.Error("Test1: Execute should be call for FakeHandler1")
+	}
+
+	//Unsubscribe should NOT be call for FakeHandler1
+	if !h1._isOnUnsubscribeFired  {
+		t.Error("Test1: Unsubscribe should be call for FakeHandler1")
+	}
+
+	//OnSubscribe should be call for FakeHandler2
+	if !h2._isOnSubscribeFired  {
+		t.Error("Test1: OnSubscribe should be call for FakeHandler2")
+	}
+
+	//Execute should be call for FakeHandler2
+	if !h2._isExecuteFired  {
+		t.Error("Test1: Execute should  be call for FakeHandler2")
+	}
+
+	//Unsubscribe should NOT be call for FakeHandler2
+	if !h2._isExecuteFired  {
+		t.Error("Test1: Unsubscribe should  be call for FakeHandler2")
 	}
 }

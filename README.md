@@ -8,7 +8,7 @@ Project distributed as open-source example and you can can copy and modify code 
 Project contains following parts:
 
 
-### Create handlers
+### Create handler(s)
 
 ```GO
 const ExampleEvent = "_EventExample"
@@ -41,7 +41,7 @@ func (h *ExampleHandler1) OnUnsubscribe() {
 
 ### Add handler into the Bus and send message
 
-```
+```Go
 func main()  {
 
 	eventBus := bus.New()

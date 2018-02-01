@@ -46,7 +46,7 @@ func main()  {
 
 	eventBus := bus.New()
 
-	h := &FakeHandler1{}
+	h := &ExampleHandler1{}
 
 	eventBus.Subscribe(h)
 

@@ -8,10 +8,6 @@ import (
 const ExampleEvent = "_EventExample"
 
 type ExampleHandler1 struct {
-	_name, _event string
-	_isOnSubscribeFired, _isOnUnsubscribeFired, _isExecuteFired bool
-	_isPanicOnEvent, _isPanicOnOnSubscribe, _isPanicOnOnUnsubscribe, _isPanicOnExecute bool
-	_isDisableMessage bool
 }
 
 func (h *ExampleHandler1) Event() string {
@@ -40,6 +36,7 @@ func main()  {
 	eventBus.Subscribe(h)
 
 	eventBus.Publish(ExampleEvent, 1, 2, "Test Message", 4.5)
+	eventBus.Publish(ExampleEvent, 11, 22, "Test Message2", 14.5)
 
 	eventBus.Unsubscribe(ExampleEvent)
 }

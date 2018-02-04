@@ -16,22 +16,21 @@ type EventBus interface {
 	Unsubscribe(eventName string) error
 }
 
-type handlersMap map[string][] handlers.Handler
-
 type eventBus struct {
 	mtx      sync.RWMutex
-	handlers handlersMap
+	handlers map[string][] handlers.Handler
 }
 
 // Execute appropriate handlers
 func (b *eventBus) Publish(eventName string, args ...interface{}) {
+
 	b.mtx.RLock()
 	defer b.mtx.RUnlock()
 
 	if hs, ok := b.handlers[eventName]; ok {
-		rArgs := buildHandlerArgs(args)
 
 		for _, h := range hs {
+			cArgs := cloneArgs(args)
 
 			// In case of Closure "h" variable will be reassigned before ever executed by goroutine.
 			// Because if this you need to save value into variable and use this variable in closure.
@@ -44,7 +43,7 @@ func (b *eventBus) Publish(eventName string, args ...interface{}) {
 						log.Printf("Panic in EventBus.Publish: %s", err)
 					}
 				}()
-				h_in_goroutine.Execute(rArgs)
+				h_in_goroutine.Execute(cArgs ...)
 			}()
 		}
 	}
@@ -101,19 +100,19 @@ func (b *eventBus) Unsubscribe(eventName string) error {
 	return fmt.Errorf("event are not %s exist", eventName)
 }
 
-func buildHandlerArgs(args []interface{}) []reflect.Value {
-	reflectedArgs := make([]reflect.Value, 0)
+func cloneArgs(args []interface{}) []interface{} {
+	cArgs := make([]interface{}, len(args))
 
-	for _, arg := range args {
-		reflectedArgs = append(reflectedArgs, reflect.ValueOf(arg))
+	for i, arg := range args {
+		cArgs[i] = reflect.Indirect(reflect.ValueOf(arg)).Interface()
 	}
 
-	return reflectedArgs
+	return cArgs
 }
 
 // New creates new EventBus
 func New() EventBus {
 	return &eventBus{
-		handlers: make(handlersMap),
+		handlers: make(map[string][] handlers.Handler),
 	}
 }

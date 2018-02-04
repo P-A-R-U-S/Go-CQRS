@@ -292,3 +292,38 @@ func Test_Should_not_fail_when_one_of_handler_panic_on_Unsubscribe(t *testing.T)
 		t.Error("Test1: Unsubscribe should  be call for FakeHandler2")
 	}
 }
+
+func Test_Should_not_leak_args_changes_to_another_handler(t *testing.T){
+
+	eventBus := bus.New()
+
+	h1 := &FakeHandler1{_name: "FakeHandler1",  _event:EventFake1, _isAfterExecuteSleep:true, _delay: time.Second}
+	h2 := &FakeHandler2{_name: "FakeHandler2",	_event:EventFake1, _isBeforeExecuteSleep:true, _delay: time.Second}
+
+	eventBus.Subscribe(h1)
+	eventBus.Subscribe(h2)
+	eventBus.Publish(EventFake1, 1, 2, 3)
+
+	time.Sleep(time.Second * 2)
+
+	if !(h1._argsChanges[0].(int) == 1001) {
+		t.Fail()
+	}
+	if !(h1._argsChanges[1].(int) == 1002) {
+		t.Fail()
+	}
+	if !(h1._argsChanges[2].(int) == 1003) {
+		t.Fail()
+	}
+
+	if !(h2._argsChanges[0].(int) == 2001) {
+		t.Fail()
+	}
+	if !(h2._argsChanges[1].(int) == 2002) {
+		t.Fail()
+	}
+	if !(h2._argsChanges[2].(int) == 2003) {
+		t.Fail()
+	}
+	time.Sleep(time.Second * 5)
+}

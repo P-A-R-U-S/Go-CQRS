@@ -178,7 +178,7 @@ func Test_Should_not_fail_when_one_of_handler_panic_inside_goroutine_on_Event(t 
 	eventBus := bus.New()
 
 	h1 := &FakeHandler1{_event:EventFake1}
-	h2 := &FakeHandler2{_event:EventFake2, _isPanicOnEvent: true, _isPanicFromGoroutine: true}
+	h2 := &FakeHandler2{_event:EventFake2, _isPanicOnEvent: true, _isPanicFromGoroutine: false}
 
 
 	eventBus.Subscribe(h1)

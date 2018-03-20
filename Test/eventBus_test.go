@@ -174,6 +174,33 @@ func Test_Should_not_fail_when_one_of_handler_panic_on_Event(t *testing.T) {
 	}
 }
 
+func Test_Should_not_fail_when_one_of_handler_panic_inside_goroutine_on_Event(t *testing.T) {
+	eventBus := bus.New()
+
+	h1 := &FakeHandler1{_event:EventFake1}
+	h2 := &FakeHandler2{_event:EventFake2, _isPanicOnEvent: true, _isPanicFromGoroutine: true}
+
+
+	eventBus.Subscribe(h1)
+	eventBus.Subscribe(h2)
+	eventBus.Publish(EventFake1, 1,2,3,4,5,67,8,9)
+	eventBus.Publish(EventFake2, 1,2,3,4,5,67,8,9)
+
+	//Wait go routine complete
+	time.Sleep(time.Second)
+
+	//Execute should NOT be call for FakeHandler1
+	if !h1._isExecuteFired  {
+		t.Error("Test1: Execute should be call for FakeHandler1")
+	}
+
+	//Execute should NOT be call for FakeHandler1
+	if h2._isExecuteFired  {
+		t.Error("Test1: Execute should NOT be call for FakeHandler2")
+	}
+}
+
+
 func Test_Should_not_fail_when_one_of_handler_panic_on_OnSubscribe(t *testing.T) {
 	eventBus := bus.New()
 
@@ -292,6 +319,7 @@ func Test_Should_not_fail_when_one_of_handler_panic_on_Unsubscribe(t *testing.T)
 		t.Error("Test1: Unsubscribe should  be call for FakeHandler2")
 	}
 }
+
 
 func Test_Should_not_leak_args_changes_to_another_handler(t *testing.T){
 

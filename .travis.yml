@@ -12,3 +12,4 @@
     - echo $GOROOT
     - echo $PATH
     - go test -v ./...
+    - go test -bench=.

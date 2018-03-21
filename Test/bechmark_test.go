@@ -14,10 +14,10 @@ func Benchmark_EventBus_Publish(b *testing.B)  {
 
 	for i := 0; i < b.N; i++ {
 
-		handler1 := &FakeHandler1{
-			_event: "Event" + strconv.Itoa(int( i / 10)) ,
-			_isDisableMessage: true,
-			}
+		handler1 := &FakeHandler1 {
+			event:            "Event" + strconv.Itoa(int( i / 10)) ,
+			isDisableMessage: true,
+		}
 
 		handler2 := &FakeHandler2{}
 
@@ -29,6 +29,6 @@ func Benchmark_EventBus_Publish(b *testing.B)  {
 		//fmt.Printf("Run Event: i:%d,  Event%s", i, "Event" + strconv.Itoa(int( i / 10)))
 		//fmt.Println()
 
-		eventBus.Publish("Event" + strconv.Itoa(int( i / 10)))
+		eventBus.Publish("Event" + strconv.Itoa(int( i / 10)), "Test")
 	}
 }

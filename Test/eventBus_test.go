@@ -21,7 +21,7 @@ func Test_Should_not_panic_when_Subscribe(t *testing.T)  {
 
 	eventBus.Subscribe(h)
 
-	if !h._isOnSubscribeFired  {
+	if !h.isOnSubscribeFired {
 		t.Fail()
 	}
 }
@@ -60,7 +60,7 @@ func Test_Should_not_panic_when_Publish(t *testing.T)  {
 	//Wait go routine complete
 	time.Sleep(time.Second)
 
-	if !h._isExecuteFired  {
+	if !h.isExecuteFired {
 		t.Fail()
 	}
 }
@@ -68,7 +68,7 @@ func Test_Should_not_panic_when_Publish(t *testing.T)  {
 func Test_Should_call_handler_by_event(t *testing.T)  {
 	eventBus := bus.New()
 
-	h1 := &FakeHandler1{_event:EventFake1}
+	h1 := &FakeHandler1{event:EventFake1}
 	h2 := &FakeHandler2{_event:EventFake2}
 
 	eventBus.Subscribe(h1)
@@ -79,7 +79,7 @@ func Test_Should_call_handler_by_event(t *testing.T)  {
 	time.Sleep(time.Second)
 
 	//Execute should NOT be call for FakeHandler1
-	if h1._isExecuteFired  {
+	if h1.isExecuteFired {
 		t.Error("Test1: Execute should NOT be call for FakeHandler1")
 	}
 
@@ -89,7 +89,7 @@ func Test_Should_call_handler_by_event(t *testing.T)  {
 	}
 
 	//Clear state
-	h1._isExecuteFired = false
+	h1.isExecuteFired = false
 	h2._isExecuteFired = false
 
 	eventBus.Publish(EventFake1, 1,2,3,4,5,67,8,9)
@@ -98,7 +98,7 @@ func Test_Should_call_handler_by_event(t *testing.T)  {
 	time.Sleep(time.Second)
 
 	//Execute should be call for FakeHandler1
-	if !h1._isExecuteFired  {
+	if !h1.isExecuteFired {
 		t.Error("Test 2: Execute should be call for FakeHandler1")
 	}
 
@@ -112,7 +112,7 @@ func Test_Should_call_handler_by_event(t *testing.T)  {
 func Test_Should_call_all_handlers_with_same_event(t *testing.T)  {
 	eventBus := bus.New()
 
-	h1 := &FakeHandler1{_name: "Handler1", _event:EventFake1}
+	h1 := &FakeHandler1{name: "Handler1", event:EventFake1}
 	h2 := &FakeHandler2{_name: "Handler2", _event:EventFake1}
 
 	eventBus.Subscribe(h1)
@@ -123,7 +123,7 @@ func Test_Should_call_all_handlers_with_same_event(t *testing.T)  {
 	time.Sleep(time.Second)
 
 	//Execute should  be call for FakeHandler1
-	if !h1._isExecuteFired  {
+	if !h1.isExecuteFired {
 		t.Error("Test1: Execute should be call for FakeHandler1")
 	}
 
@@ -142,7 +142,7 @@ func Test_Should_not_panic_when_Unsubscribe(t *testing.T)  {
 	eventBus.Publish(EventFake1, 1,2,3,4,5,67,8,9)
 	eventBus.Unsubscribe(h.Event())
 
-	if !h._isOnSubscribeFired  {
+	if !h.isOnSubscribeFired {
 		t.Fail()
 	}
 }
@@ -151,7 +151,7 @@ func Test_Should_not_panic_when_Unsubscribe(t *testing.T)  {
 func Test_Should_not_fail_when_one_of_handler_panic_on_Event(t *testing.T) {
 	eventBus := bus.New()
 
-	h1 := &FakeHandler1{_event:EventFake1}
+	h1 := &FakeHandler1{event:EventFake1}
 	h2 := &FakeHandler2{_event:EventFake2, _isPanicOnEvent: true}
 
 
@@ -164,7 +164,7 @@ func Test_Should_not_fail_when_one_of_handler_panic_on_Event(t *testing.T) {
 	time.Sleep(time.Second)
 
 	//Execute should NOT be call for FakeHandler1
-	if !h1._isExecuteFired  {
+	if !h1.isExecuteFired {
 		t.Error("Test1: Execute should be call for FakeHandler1")
 	}
 
@@ -177,7 +177,7 @@ func Test_Should_not_fail_when_one_of_handler_panic_on_Event(t *testing.T) {
 func Test_Should_not_fail_when_one_of_handler_panic_inside_goroutine_on_Event(t *testing.T) {
 	eventBus := bus.New()
 
-	h1 := &FakeHandler1{_event:EventFake1}
+	h1 := &FakeHandler1{event:EventFake1}
 	h2 := &FakeHandler2{_event:EventFake2, _isPanicOnEvent: true, _isPanicFromGoroutine: false}
 
 
@@ -190,7 +190,7 @@ func Test_Should_not_fail_when_one_of_handler_panic_inside_goroutine_on_Event(t 
 	time.Sleep(time.Second)
 
 	//Execute should NOT be call for FakeHandler1
-	if !h1._isExecuteFired  {
+	if !h1.isExecuteFired {
 		t.Error("Test1: Execute should be call for FakeHandler1")
 	}
 
@@ -204,7 +204,7 @@ func Test_Should_not_fail_when_one_of_handler_panic_inside_goroutine_on_Event(t 
 func Test_Should_not_fail_when_one_of_handler_panic_on_OnSubscribe(t *testing.T) {
 	eventBus := bus.New()
 
-	h1 := &FakeHandler1{_event:EventFake1}
+	h1 := &FakeHandler1{event:EventFake1}
 	h2 := &FakeHandler2{_event:EventFake2, _isPanicOnOnSubscribe: true}
 
 	eventBus.Subscribe(h1)
@@ -217,12 +217,12 @@ func Test_Should_not_fail_when_one_of_handler_panic_on_OnSubscribe(t *testing.T)
 	time.Sleep(time.Second)
 
 	//OnSubscribe should NOT be call for FakeHandler1
-	if !h1._isOnSubscribeFired  {
+	if !h1.isOnSubscribeFired {
 		t.Error("Test1: Execute should be call for FakeHandler1")
 	}
 
 	//Execute should NOT be call for FakeHandler1
-	if !h1._isExecuteFired  {
+	if !h1.isExecuteFired {
 		t.Error("Test1: Execute should be call for FakeHandler1")
 	}
 
@@ -240,7 +240,7 @@ func Test_Should_not_fail_when_one_of_handler_panic_on_OnSubscribe(t *testing.T)
 func Test_Should_not_fail_when_one_of_handler_panic_on_Execute(t *testing.T) {
 	eventBus := bus.New()
 
-	h1 := &FakeHandler1{_event:EventFake1}
+	h1 := &FakeHandler1{event:EventFake1}
 	h2 := &FakeHandler2{_event:EventFake2, _isPanicOnExecute: true}
 
 	eventBus.Subscribe(h1)
@@ -252,12 +252,12 @@ func Test_Should_not_fail_when_one_of_handler_panic_on_Execute(t *testing.T) {
 	time.Sleep(time.Second)
 
 	//OnSubscribe should NOT be call for FakeHandler1
-	if !h1._isOnSubscribeFired  {
+	if !h1.isOnSubscribeFired {
 		t.Error("Test1: Execute should be call for FakeHandler1")
 	}
 
 	//Execute should NOT be call for FakeHandler1
-	if !h1._isExecuteFired  {
+	if !h1.isExecuteFired {
 		t.Error("Test1: Execute should be call for FakeHandler1")
 	}
 
@@ -275,7 +275,7 @@ func Test_Should_not_fail_when_one_of_handler_panic_on_Execute(t *testing.T) {
 func Test_Should_not_fail_when_one_of_handler_panic_on_Unsubscribe(t *testing.T) {
 	eventBus := bus.New()
 
-	h1 := &FakeHandler1{_event:EventFake1}
+	h1 := &FakeHandler1{event:EventFake1}
 	h2 := &FakeHandler2{_event:EventFake2, _isPanicOnOnUnsubscribe: true}
 
 	eventBus.Subscribe(h1)
@@ -290,17 +290,17 @@ func Test_Should_not_fail_when_one_of_handler_panic_on_Unsubscribe(t *testing.T)
 	time.Sleep(time.Second)
 
 	//OnSubscribe should NOT be call for FakeHandler1
-	if !h1._isOnSubscribeFired  {
+	if !h1.isOnSubscribeFired {
 		t.Error("Test1: OnSubscribe should be call for FakeHandler1")
 	}
 
 	//Execute should NOT be call for FakeHandler1
-	if !h1._isExecuteFired  {
+	if !h1.isExecuteFired {
 		t.Error("Test1: Execute should be call for FakeHandler1")
 	}
 
 	//Unsubscribe should NOT be call for FakeHandler1
-	if !h1._isOnUnsubscribeFired  {
+	if !h1.isOnUnsubscribeFired {
 		t.Error("Test1: Unsubscribe should be call for FakeHandler1")
 	}
 
@@ -325,22 +325,22 @@ func Test_Should_not_leak_args_changes_to_another_handler(t *testing.T){
 
 	eventBus := bus.New()
 
-	h1 := &FakeHandler1{_name: "FakeHandler1",  _event:EventFake1, _isAfterExecuteSleep:true, _delay: time.Second}
+	h1 := &FakeHandler1{name: "FakeHandler1",  event:EventFake1, isAfterExecuteSleep:true, delay: time.Second}
 	h2 := &FakeHandler2{_name: "FakeHandler2",	_event:EventFake1, _isBeforeExecuteSleep:true, _delay: time.Second}
 
 	eventBus.Subscribe(h1)
 	eventBus.Subscribe(h2)
 	eventBus.Publish(EventFake1, 1, 2, 3)
 
-	time.Sleep(time.Second * 2)
+	time.Sleep(time.Second * 3)
 
-	if !(h1._argsChanges[0].(int) == 1001) {
+	if !(h1.argsChanges[0].(int) == 1001) {
 		t.Fail()
 	}
-	if !(h1._argsChanges[1].(int) == 1002) {
+	if !(h1.argsChanges[1].(int) == 1002) {
 		t.Fail()
 	}
-	if !(h1._argsChanges[2].(int) == 1003) {
+	if !(h1.argsChanges[2].(int) == 1003) {
 		t.Fail()
 	}
 

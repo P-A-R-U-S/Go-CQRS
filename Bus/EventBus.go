@@ -5,6 +5,7 @@ import (
 	"reflect"
 	"sync"
 	"errors"
+	"log"
 	handlers "Golang-CQRS/Handlers"
 )
 
@@ -15,12 +16,9 @@ type EventBus interface {
 	Unsubscribe(eventName string) error
 }
 
-
-type handlersMap map[string][] handlers.Handler
-
 type eventBus struct {
 	mtx      sync.RWMutex
-	handlers handlersMap
+	handlers map[string][] handlers.Handler
 }
 
 // Execute appropriate handlers
@@ -29,25 +27,49 @@ func (b *eventBus) Publish(eventName string, args ...interface{}) {
 	defer b.mtx.RUnlock()
 
 	if hs, ok := b.handlers[eventName]; ok {
-		rArgs := buildHandlerArgs(args)
 
 		for _, h := range hs {
-			go h.Execute(rArgs)
+
+			cArgs := cloneArgs(args)
+
+			// In case of Closure "h" variable will be reassigned before ever executed by goroutine.
+			// Because if this you need to save value into variable and use this variable in closure.
+			h_in_goroutine := h
+
+			go func() {
+				//Handle Panic in Handler.Execute.
+				defer func() {
+					if err := recover(); err != nil {
+						log.Printf("Panic in EventBus.Publish: %s", err)
+					}
+				}()
+				h_in_goroutine.Execute(cArgs ...)
+			}()
 		}
 	}
 }
 
 // Subscribe Handler
 func (b *eventBus) Subscribe(h handlers.Handler) error {
+	b.mtx.Lock()
+	//Handle Panic on adding new handler
+	defer func() {
+		b.mtx.Unlock()
+		if err := recover(); err != nil {
+			log.Printf("Panic in EventBus.Subscribe: %s", err)
+		}
+	}()
+
 	if h == nil {
-		return errors.New("Handled can not be nil.")
+		return errors.New("Handler can not be nil.")
 	}
 
-	b.mtx.Lock()
-	defer b.mtx.Unlock()
+	if len(h.Event()) == 0 {
+		return errors.New("Handlers with empty Event are not allowed.")
+	}
 
 	h.OnSubscribe()
-	b.handlers[h.Name()] = append(b.handlers[h.Name()], h)
+	b.handlers[h.Event()] = append(b.handlers[h.Event()], h)
 
 	return nil
 }
@@ -55,7 +77,13 @@ func (b *eventBus) Subscribe(h handlers.Handler) error {
 // Unsubscribe Handler
 func (b *eventBus) Unsubscribe(eventName string) error {
 	b.mtx.Lock()
-	defer b.mtx.Unlock()
+	//Handle Panic on adding new handler
+	defer func() {
+		b.mtx.Unlock()
+		if err := recover(); err != nil {
+			log.Printf("Panic in EventBus.Unsubscribe: %s", err)
+		}
+	}()
 
 	if _, ok := b.handlers[eventName]; ok {
 
@@ -72,98 +100,17 @@ func (b *eventBus) Unsubscribe(eventName string) error {
 	return fmt.Errorf("event are not %s exist", eventName)
 }
 
-func buildHandlerArgs(args []interface{}) []reflect.Value {
-	reflectedArgs := make([]reflect.Value, 0)
-
-	for _, arg := range args {
-		reflectedArgs = append(reflectedArgs, reflect.ValueOf(arg))
+func cloneArgs(args []interface{}) []interface{} {
+	cArgs := make([]interface{}, len(args))
+	for i, arg := range args {
+		cArgs[i] = reflect.Indirect(reflect.ValueOf(arg)).Interface()
 	}
-
-	return reflectedArgs
+	return cArgs
 }
 
 // New creates new EventBus
 func New() EventBus {
 	return &eventBus{
-		handlers: make(handlersMap),
+		handlers: make(map[string][] handlers.Handler),
 	}
 }
-
-//import (
-//	"fmt"
-//	"reflect"
-//	"sync"
-//)
-//
-//
-//type handlersMap map[string][]reflect.Value
-//
-//type eventBus struct {
-//	mtx      sync.RWMutex
-//	handlers handlersMap
-//}
-//
-//// Publish arguments to given topic subscribers
-//func (b *eventBus) Publish(topic string, args ...interface{}) {
-//	b.mtx.RLock()
-//	defer b.mtx.RUnlock()
-//
-//	if hs, ok := b.handlers[topic]; ok {
-//		rArgs := buildHandlerArgs(args)
-//
-//		for _, h := range hs {
-//			go h.Call(rArgs)
-//		}
-//	}
-//}
-//
-//// Subscribe to a topic
-//func (b *eventBus) Subscribe(topic string, fn interface{}) error {
-//	if reflect.TypeOf(fn).Kind() != reflect.Func {
-//		return fmt.Errorf("%s is not a reflect.Func", reflect.TypeOf(fn))
-//	}
-//
-//	b.mtx.Lock()
-//	defer b.mtx.Unlock()
-//
-//	b.handlers[topic] = append(b.handlers[topic], reflect.ValueOf(fn))
-//
-//	return nil
-//}
-//
-//// Unsubsriber topic
-//func (b *eventBus) Unsubscribe(topic string, fn interface{}) error {
-//	b.mtx.Lock()
-//	defer b.mtx.Unlock()
-//
-//	if _, ok := b.handlers[topic]; ok {
-//		rv := reflect.ValueOf(fn)
-//
-//		for i, h := range b.handlers[topic] {
-//			if h == rv {
-//				b.handlers[topic] = append(b.handlers[topic][:i], b.handlers[topic][i+1:]...)
-//			}
-//		}
-//
-//		return nil
-//	}
-//
-//	return fmt.Errorf("Topic %s doesn't exist", topic)
-//}
-//
-//func buildHandlerArgs(args []interface{}) []reflect.Value {
-//	reflectedArgs := make([]reflect.Value, 0)
-//
-//	for _, arg := range args {
-//		reflectedArgs = append(reflectedArgs, reflect.ValueOf(arg))
-//	}
-//
-//	return reflectedArgs
-//}
-//
-//// New creates new EventBus
-//func New() EventBus {
-//	return &eventBus{
-//		handlers: make(handlersMap),
-//	}
-//}

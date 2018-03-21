@@ -178,7 +178,7 @@ func (h *FakeHandler2) Execute(args ... interface{}) error {
 		time.Sleep(h._delay)
 	}
 
-	fmt.Printf("--> %s : %s Args after changes %d\n", h._name, h.Event(), args)
+	//fmt.Printf("--> %s : %s Args after changes %d\n", h._name, h.Event(), args)
 	h._argsChanges = make([]interface{}, len(args))
 	for i, arg := range args {
 		h._argsChanges[i] = reflect.Indirect(reflect.ValueOf(arg)).Interface()

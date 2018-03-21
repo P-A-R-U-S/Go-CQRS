@@ -1,4 +1,4 @@
-# Project Title
+# Golang CQRS  [![Travis-CI](https://travis-ci.org/P-A-R-U-S/Golang-CQRS.svg?branch=master)](https://travis-ci.org/P-A-R-U-S/Golang-CQRS) 
 
 Implementation of CQRS Pattern for Go language.
 

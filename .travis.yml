@@ -1,10 +1,13 @@
   language: go
-  install:
-    # Add Godeps dependencies to GOPATH and PATH
-    - export GOPATH="${TRAVIS_BUILD_DIR}/src/github.com/P-A-R-U-S:$GOPATH"
-    - export PATH="${TRAVIS_BUILD_DIR}/src/github.com/P-A-R-U-S/bin:$PATH"
   go:
     - "1.10"
-
+  install:
+    # Add Godeps dependencies to GOPATH and PATH
+    - export GOPATH="$GOPATH"
+    - export PATH="$PATH"
   script:
+    - ls
+    - echo $GOPATH
+    - echo $GOROOT
+    - echo $PATH
     - go test -v ./...

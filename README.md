@@ -4,9 +4,59 @@ Implementation of CQRS Pattern for Go language.
 
 ## Getting Started
 
-Project distibuted as open-source example and you can can copy and modify code snippet based on you need or requirements.
+Project distributed as open-source example and you can can copy and modify code snippet based on you need or requirements.
 Project contains following parts:
-- EventBus
+
+
+### Create handler(s)
+
+```GO
+const ExampleEvent = "_EventExample"
+
+type ExampleHandler1 struct {
+	_name, _event string
+	_isOnSubscribeFired, _isOnUnsubscribeFired, _isExecuteFired bool
+	_isPanicOnEvent, _isPanicOnOnSubscribe, _isPanicOnOnUnsubscribe, _isPanicOnExecute bool
+	_isDisableMessage bool
+}
+
+func (h *ExampleHandler1) Event() string {
+
+	return ExampleEvent
+}
+func (h *ExampleHandler1) Execute(... interface{}) error {
+
+	fmt.Println("Run Execute...")
+
+	return nil
+}
+func (h *ExampleHandler1) OnSubscribe() {
+	fmt.Println("Run OnSubscribe...")
+}
+func (h *ExampleHandler1) OnUnsubscribe() {
+	fmt.Println("Run OnUnsubscribe...")
+}
+
+```
+
+### Add handler into the Bus and send message
+
+```Go
+func main()  {
+
+	eventBus := bus.New()
+
+	h := &ExampleHandler1{}
+
+	eventBus.Subscribe(h)
+
+	eventBus.Publish(ExampleEvent, 1, 2, "Test Message", 4.5)
+
+	eventBus.Unsubscribe(ExampleEvent)
+}
+```
+
+
 
 ## Contributing
 
@@ -36,4 +86,6 @@ This project is licensed under the MIT License - see the [LICENSE.md](https://op
 * Hat tip to anyone who's code was used
 * Inspiration
 * etc
+
+
 

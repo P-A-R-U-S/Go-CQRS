@@ -1,9 +1,11 @@
+  go_import_path: src/github.com/P-A-R-U-S/Golang-CQRS
   language: go
   go:
     - "1.10"
   install:
     # Add Godeps dependencies to GOPATH and PATH
-    - export GOPATH="/home/travis/gopath/src/github.com/P-A-R-U-S/Golang-CQRS"
+    - export GOPATH="/home/travis/gopath/"
+    #src/github.com/P-A-R-U-S/Golang-CQRS"
   script:
     - ls
     - pwd

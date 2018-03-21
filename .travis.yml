@@ -1,4 +1,4 @@
-  go_import_path: src/github.com/P-A-R-U-S/Golang-CQRS
+  go_import_path: Golang-CQRS
   language: go
   go:
     - "1.10"

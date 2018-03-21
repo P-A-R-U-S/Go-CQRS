@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"reflect"
 	"sync"
-	"github.com/pkg/errors"
+	"errors"
 	handlers "Golang-CQRS/Handlers"
 )
 

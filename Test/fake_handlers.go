@@ -39,7 +39,7 @@ func (h *FakeHandler1) Event() string {
 	return EventFake1
 }
 func (h *FakeHandler1) Execute(args ... interface{}) error {
-	fmt.Printf("--> %s : %s Args before changes %d\n", h.name, h.Event(), args)
+	//fmt.Printf("--> %s : %s Args before changes %d\n", h.name, h.Event(), args)
 
 	if h.isBeforeExecuteSleep {
 		time.Sleep(h.delay)
@@ -76,7 +76,7 @@ func (h *FakeHandler1) Execute(args ... interface{}) error {
 		fmt.Println()
 	}
 
-	fmt.Printf("--> %s : %s Args after changes %d\n", h.name, h.Event(), args)
+	//fmt.Printf("--> %s : %s Args after changes %d\n", h.name, h.Event(), args)
 	h.argsChanges = make([]interface{}, len(args))
 	for i, arg := range args {
 		h.argsChanges[i] = reflect.Indirect(reflect.ValueOf(arg)).Interface()

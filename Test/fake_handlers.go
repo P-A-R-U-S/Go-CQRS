@@ -143,7 +143,7 @@ func (h *FakeHandler2) Event() string {
 	return ""
 }
 func (h *FakeHandler2) Execute(args ... interface{}) error {
-	fmt.Printf("--> %s : %s Args before changes %d\n", h._name, h.Event(), args)
+	//fmt.Printf("--> %s : %s Args before changes %d\n", h._name, h.Event(), args)
 
 	if !h._isDisableMessage {
 		fmt.Printf("Executed: %s : %s", h._name, h.Event())

@@ -1,3 +1,4 @@
+  go_import_path: src/github.com/P-A-R-U-S
   language: go
   go:
     - "1.10"

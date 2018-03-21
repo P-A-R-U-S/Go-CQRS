@@ -3,7 +3,7 @@
   go:
     - "1.10"
   install:
-    # Add Godeps dependencies to GOPATH and PATH
+    # Add dependencies to GOPATH and PATH
     - export GOPATH="/home/travis/gopath/"
   script:
     - ls
@@ -12,4 +12,4 @@
     - echo $GOROOT
     - echo $PATH
     - go test -v ./...
-    - go test -bench=.
+    - go test -bench=. -v ./...

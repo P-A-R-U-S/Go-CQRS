@@ -3,7 +3,7 @@
     - "1.10"
   install:
     # Add Godeps dependencies to GOPATH and PATH
-    #- export GOPATH="$TRAVIS_BUILD_DIR"
+    - export GOPATH="$GOPATH"
   script:
     - ls
     - pwd

@@ -3,7 +3,7 @@
     - "1.10"
   install:
     # Add Godeps dependencies to GOPATH and PATH
-    - export GOPATH="$GOPATH"
+    - export GOPATH="/home/travis/gopath/src/github.com/P-A-R-U-S/Golang-CQRS"
   script:
     - ls
     - pwd

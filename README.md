@@ -1,4 +1,4 @@
-# Golang CQRS  [![Travis-CI](https://travis-ci.org/P-A-R-U-S/Golang-CQRS.svg?branch=master)](https://travis-ci.org/P-A-R-U-S/Golang-CQRS) 
+# Golang CQRS  [![Travis-CI](https://travis-ci.org/P-A-R-U-S/Golang-CQRS.svg?branch=master)](https://travis-ci.org/P-A-R-U-S/Golang-CQRS)  [![License](https://img.shields.io/dub/l/vibe-d.svg)](https://opensource.org/licenses/MIT)
 
 Implementation of CQRS Pattern for Go language.
 

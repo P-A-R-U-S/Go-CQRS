@@ -16,6 +16,7 @@ type EventBus interface {
 	Unsubscribe(eventName string) error
 }
 
+// eventBus struct
 type eventBus struct {
 	mtx      sync.RWMutex
 	handlers map[string][] handlers.Handler

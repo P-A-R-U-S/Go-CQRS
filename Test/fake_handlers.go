@@ -1,10 +1,10 @@
 package Test
 
 import (
-	"fmt"
 	"errors"
-	"time"
+	"fmt"
 	"reflect"
+	"time"
 )
 
 const eventFake1 = "_EventFake1"
@@ -35,10 +35,9 @@ func (h *fakeHandler1) Event() string {
 		return h.event
 	}
 
-
 	return eventFake1
 }
-func (h *fakeHandler1) Execute(args ... interface{}) error {
+func (h *fakeHandler1) Execute(args ...interface{}) error {
 	//fmt.Printf("--> %s : %s Args before changes %d\n", h.name, h.Event(), args)
 
 	if h.isBeforeExecuteSleep {
@@ -68,7 +67,6 @@ func (h *fakeHandler1) Execute(args ... interface{}) error {
 	if h.isAfterExecuteSleep {
 		time.Sleep(h.delay)
 	}
-
 
 	if !h.isDisableMessage {
 		fmt.Printf("Executed: %s : %s", h.name, h.Event())
@@ -112,7 +110,6 @@ func (h *fakeHandler1) OnUnsubscribe() {
 	h.isOnUnsubscribeFired = true
 }
 
-
 type fakeHandler2 struct {
 	name, event                                                                    string
 	isOnSubscribeFired, isOnUnsubscribeFired, isExecuteFired                       bool
@@ -141,7 +138,7 @@ func (h *fakeHandler2) Event() string {
 
 	return ""
 }
-func (h *fakeHandler2) Execute(args ... interface{}) error {
+func (h *fakeHandler2) Execute(args ...interface{}) error {
 	//fmt.Printf("--> %s : %s Args before changes %d\n", h.name, h.Event(), args)
 
 	if !h.isDisableMessage {

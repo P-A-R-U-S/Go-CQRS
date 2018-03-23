@@ -1,21 +1,20 @@
 package Test
 
 import (
-	"testing"
 	bus "Golang-CQRS/Bus"
 	"strconv"
+	"testing"
 )
 
-
-func Benchmark_EventBus_Publish(b *testing.B)  {
+func Benchmark_EventBus_Publish(b *testing.B) {
 	b.Logf("b.N is %d\n", b.N)
 
 	eventBus := bus.New()
 
 	for i := 0; i < b.N; i++ {
 
-		handler1 := &fakeHandler1 {
-			event:            "Event" + strconv.Itoa(int( i / 10)) ,
+		handler1 := &fakeHandler1{
+			event:            "Event" + strconv.Itoa(int(i/10)),
 			isDisableMessage: true,
 		}
 
@@ -29,6 +28,6 @@ func Benchmark_EventBus_Publish(b *testing.B)  {
 		//fmt.Printf("Run Event: i:%d,  Event%s", i, "Event" + strconv.Itoa(int( i / 10)))
 		//fmt.Println()
 
-		eventBus.Publish("Event" + strconv.Itoa(int( i / 10)), "Test")
+		eventBus.Publish("Event"+strconv.Itoa(int(i/10)), "Test")
 	}
 }

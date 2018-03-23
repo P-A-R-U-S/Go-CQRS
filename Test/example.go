@@ -7,7 +7,6 @@ import (
 const exampleEvent = "_EventExample"
 
 type exampleHandler1 struct {
-
 }
 
 func (h *exampleHandler1) Event() string {
@@ -15,7 +14,7 @@ func (h *exampleHandler1) Event() string {
 	return exampleEvent
 }
 
-func (h *exampleHandler1) Execute(... interface{}) error {
+func (h *exampleHandler1) Execute(...interface{}) error {
 
 	fmt.Println("Run Execute...")
 

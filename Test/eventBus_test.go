@@ -1,8 +1,8 @@
 package Test
 
 import (
-	"testing"
 	bus "Golang-CQRS/Bus"
+	"testing"
 	"time"
 )
 
@@ -14,7 +14,7 @@ func Test_Should_not_panic_when_create_instance_of_EventBus(t *testing.T) {
 	}
 }
 
-func Test_Should_not_panic_when_Subscribe(t *testing.T)  {
+func Test_Should_not_panic_when_Subscribe(t *testing.T) {
 	eventBus := bus.New()
 
 	h := new(fakeHandler1)
@@ -29,10 +29,10 @@ func Test_Should_not_panic_when_Subscribe(t *testing.T)  {
 func Test_Should_not_accept_nil_when_Subscribe(t *testing.T) {
 	eventBus := bus.New()
 
-	err :=  eventBus.Subscribe(nil)
+	err := eventBus.Subscribe(nil)
 
 	if err.Error() != "Handler can not be nil." {
-		t.Errorf("Error Message should be: %s", "Handler can not be nil..." )
+		t.Errorf("Error Message should be: %s", "Handler can not be nil...")
 	}
 }
 
@@ -41,21 +41,20 @@ func Test_Should_not_accept_handler_with_empty_event_when_Subscribe(t *testing.T
 
 	h := new(fakeHandler2)
 
-	err :=  eventBus.Subscribe(h)
+	err := eventBus.Subscribe(h)
 
 	if err.Error() != "Handlers with empty Event are not allowed." {
-		t.Errorf("Error Message should be: %s", "Handlers with empty Event are not allowed." )
+		t.Errorf("Error Message should be: %s", "Handlers with empty Event are not allowed.")
 	}
 }
 
-
-func Test_Should_not_panic_when_Publish(t *testing.T)  {
+func Test_Should_not_panic_when_Publish(t *testing.T) {
 	eventBus := bus.New()
 
 	h := new(fakeHandler1)
 
 	eventBus.Subscribe(h)
-	eventBus.Publish(eventFake1, 1,2,3,4,5,67,8,9)
+	eventBus.Publish(eventFake1, 1, 2, 3, 4, 5, 67, 8, 9)
 
 	//Wait go routine complete
 	time.Sleep(time.Second)
@@ -65,7 +64,7 @@ func Test_Should_not_panic_when_Publish(t *testing.T)  {
 	}
 }
 
-func Test_Should_call_handler_by_event(t *testing.T)  {
+func Test_Should_call_handler_by_event(t *testing.T) {
 	eventBus := bus.New()
 
 	h1 := &fakeHandler1{event: eventFake1}
@@ -73,7 +72,7 @@ func Test_Should_call_handler_by_event(t *testing.T)  {
 
 	eventBus.Subscribe(h1)
 	eventBus.Subscribe(h2)
-	eventBus.Publish(eventFake2, 1,2,3,4,5,67,8,9)
+	eventBus.Publish(eventFake2, 1, 2, 3, 4, 5, 67, 8, 9)
 
 	//Wait go routine complete
 	time.Sleep(time.Second)
@@ -92,7 +91,7 @@ func Test_Should_call_handler_by_event(t *testing.T)  {
 	h1.isExecuteFired = false
 	h2.isExecuteFired = false
 
-	eventBus.Publish(eventFake1, 1,2,3,4,5,67,8,9)
+	eventBus.Publish(eventFake1, 1, 2, 3, 4, 5, 67, 8, 9)
 
 	//Wait go routine complete
 	time.Sleep(time.Second)
@@ -109,7 +108,7 @@ func Test_Should_call_handler_by_event(t *testing.T)  {
 
 }
 
-func Test_Should_call_all_handlers_with_same_event(t *testing.T)  {
+func Test_Should_call_all_handlers_with_same_event(t *testing.T) {
 	eventBus := bus.New()
 
 	h1 := &fakeHandler1{name: "Handler1", event: eventFake1}
@@ -117,7 +116,7 @@ func Test_Should_call_all_handlers_with_same_event(t *testing.T)  {
 
 	eventBus.Subscribe(h1)
 	eventBus.Subscribe(h2)
-	eventBus.Publish(eventFake1, 1,2,3,4,5,67,8,9)
+	eventBus.Publish(eventFake1, 1, 2, 3, 4, 5, 67, 8, 9)
 
 	//Wait go routine complete
 	time.Sleep(time.Second)
@@ -133,13 +132,13 @@ func Test_Should_call_all_handlers_with_same_event(t *testing.T)  {
 	}
 }
 
-func Test_Should_not_panic_when_Unsubscribe(t *testing.T)  {
+func Test_Should_not_panic_when_Unsubscribe(t *testing.T) {
 	eventBus := bus.New()
 
 	h := new(fakeHandler1)
 
 	eventBus.Subscribe(h)
-	eventBus.Publish(eventFake1, 1,2,3,4,5,67,8,9)
+	eventBus.Publish(eventFake1, 1, 2, 3, 4, 5, 67, 8, 9)
 	eventBus.Unsubscribe(h.Event())
 
 	if !h.isOnSubscribeFired {
@@ -147,18 +146,16 @@ func Test_Should_not_panic_when_Unsubscribe(t *testing.T)  {
 	}
 }
 
-
 func Test_Should_not_fail_when_one_of_handler_panic_on_Event(t *testing.T) {
 	eventBus := bus.New()
 
 	h1 := &fakeHandler1{event: eventFake1}
 	h2 := &fakeHandler2{event: eventFake2, isPanicOnEvent: true}
 
-
 	eventBus.Subscribe(h1)
 	eventBus.Subscribe(h2)
-	eventBus.Publish(eventFake1, 1,2,3,4,5,67,8,9)
-	eventBus.Publish(eventFake2, 1,2,3,4,5,67,8,9)
+	eventBus.Publish(eventFake1, 1, 2, 3, 4, 5, 67, 8, 9)
+	eventBus.Publish(eventFake2, 1, 2, 3, 4, 5, 67, 8, 9)
 
 	//Wait go routine complete
 	time.Sleep(time.Second)
@@ -180,11 +177,10 @@ func Test_Should_not_fail_when_one_of_handler_panic_inside_goroutine_on_Event(t 
 	h1 := &fakeHandler1{event: eventFake1}
 	h2 := &fakeHandler2{event: eventFake2, isPanicOnEvent: true, isPanicFromGoroutine: false}
 
-
 	eventBus.Subscribe(h1)
 	eventBus.Subscribe(h2)
-	eventBus.Publish(eventFake1, 1,2,3,4,5,67,8,9)
-	eventBus.Publish(eventFake2, 1,2,3,4,5,67,8,9)
+	eventBus.Publish(eventFake1, 1, 2, 3, 4, 5, 67, 8, 9)
+	eventBus.Publish(eventFake2, 1, 2, 3, 4, 5, 67, 8, 9)
 
 	//Wait go routine complete
 	time.Sleep(time.Second)
@@ -200,7 +196,6 @@ func Test_Should_not_fail_when_one_of_handler_panic_inside_goroutine_on_Event(t 
 	}
 }
 
-
 func Test_Should_not_fail_when_one_of_handler_panic_on_OnSubscribe(t *testing.T) {
 	eventBus := bus.New()
 
@@ -210,8 +205,8 @@ func Test_Should_not_fail_when_one_of_handler_panic_on_OnSubscribe(t *testing.T)
 	eventBus.Subscribe(h1)
 	eventBus.Subscribe(h2)
 
-	eventBus.Publish(eventFake1, 1,2,3,4,5,67,8,9)
-	eventBus.Publish(eventFake2, 1,2,3,4,5,67,8,9)
+	eventBus.Publish(eventFake1, 1, 2, 3, 4, 5, 67, 8, 9)
+	eventBus.Publish(eventFake2, 1, 2, 3, 4, 5, 67, 8, 9)
 
 	//Wait go routine complete
 	time.Sleep(time.Second)
@@ -245,8 +240,8 @@ func Test_Should_not_fail_when_one_of_handler_panic_on_Execute(t *testing.T) {
 
 	eventBus.Subscribe(h1)
 	eventBus.Subscribe(h2)
-	eventBus.Publish(eventFake1, 1,2,3,4,5,67,8,9)
-	eventBus.Publish(eventFake2, 1,2,3,4,5,67,8,9)
+	eventBus.Publish(eventFake1, 1, 2, 3, 4, 5, 67, 8, 9)
+	eventBus.Publish(eventFake2, 1, 2, 3, 4, 5, 67, 8, 9)
 
 	//Wait go routine complete
 	time.Sleep(time.Second)
@@ -280,11 +275,10 @@ func Test_Should_not_fail_when_one_of_handler_panic_on_Unsubscribe(t *testing.T)
 
 	eventBus.Subscribe(h1)
 	eventBus.Subscribe(h2)
-	eventBus.Publish(eventFake1, 1,2,3,4,5,67,8,9)
-	eventBus.Publish(eventFake2, 1,2,3,4,5,67,8,9)
+	eventBus.Publish(eventFake1, 1, 2, 3, 4, 5, 67, 8, 9)
+	eventBus.Publish(eventFake2, 1, 2, 3, 4, 5, 67, 8, 9)
 	eventBus.Unsubscribe(eventFake1)
 	eventBus.Unsubscribe(eventFake2)
-
 
 	//Wait go routine complete
 	time.Sleep(time.Second)
@@ -320,13 +314,12 @@ func Test_Should_not_fail_when_one_of_handler_panic_on_Unsubscribe(t *testing.T)
 	}
 }
 
-
-func Test_Should_not_leak_args_changes_to_another_handler(t *testing.T){
+func Test_Should_not_leak_args_changes_to_another_handler(t *testing.T) {
 
 	eventBus := bus.New()
 
-	h1 := &fakeHandler1{name: "fakeHandler1",  event: eventFake1, isAfterExecuteSleep:true, delay: time.Second}
-	h2 := &fakeHandler2{name: "fakeHandler2",	event: eventFake1, isBeforeExecuteSleep:true, delay: time.Second}
+	h1 := &fakeHandler1{name: "fakeHandler1", event: eventFake1, isAfterExecuteSleep: true, delay: time.Second}
+	h2 := &fakeHandler2{name: "fakeHandler2", event: eventFake1, isBeforeExecuteSleep: true, delay: time.Second}
 
 	eventBus.Subscribe(h1)
 	eventBus.Subscribe(h2)

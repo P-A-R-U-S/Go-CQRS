@@ -63,7 +63,6 @@ func (h *FakeHandler1) Execute(args ... interface{}) error {
 
 	h.isExecuteFired = true
 
-
 	time.Sleep(time.Microsecond * 500)
 
 	if h.isAfterExecuteSleep {
@@ -115,51 +114,51 @@ func (h *FakeHandler1) OnUnsubscribe() {
 
 
 type FakeHandler2 struct {
-	_name, _event                                                      					string
-	_isOnSubscribeFired, _isOnUnsubscribeFired, _isExecuteFired 						bool
-	_isPanicFromGoroutine bool
-	_isPanicOnEvent, _isPanicOnOnSubscribe, _isPanicOnOnUnsubscribe, _isPanicOnExecute 	bool
-	_isDisableMessage, _isBeforeExecuteSleep, _isAfterExecuteSleep bool
-	_delay time.Duration
-	_argsChanges []interface{}
+	name, event                                                                    string
+	isOnSubscribeFired, isOnUnsubscribeFired, isExecuteFired                       bool
+	isPanicFromGoroutine                                                           bool
+	isPanicOnEvent, isPanicOnOnSubscribe, isPanicOnOnUnsubscribe, isPanicOnExecute bool
+	isDisableMessage, isBeforeExecuteSleep, isAfterExecuteSleep                    bool
+	delay                                                                          time.Duration
+	argsChanges                                                                    []interface{}
 }
 
 func (h *FakeHandler2) Event() string {
 
-	if h._isPanicOnEvent {
-		if !h._isPanicFromGoroutine {
-			panic(errors.New(h._event + ":Panic in Event"))
+	if h.isPanicOnEvent {
+		if !h.isPanicFromGoroutine {
+			panic(errors.New(h.event + ":Panic in Event"))
 		} else {
 			go func() {
-				panic(errors.New(h._event + ":" + h._name + ":Panic in Event inside of goroutine."))
+				panic(errors.New(h.event + ":" + h.name + ":Panic in Event inside of goroutine."))
 			}()
 		}
 	}
 
-	if len(h._event) > 0 {
-		return h._event
+	if len(h.event) > 0 {
+		return h.event
 	}
 
 	return ""
 }
 func (h *FakeHandler2) Execute(args ... interface{}) error {
-	//fmt.Printf("--> %s : %s Args before changes %d\n", h._name, h.Event(), args)
+	//fmt.Printf("--> %s : %s Args before changes %d\n", h.name, h.Event(), args)
 
-	if !h._isDisableMessage {
-		fmt.Printf("Executed: %s : %s", h._name, h.Event())
+	if !h.isDisableMessage {
+		fmt.Printf("Executed: %s : %s", h.name, h.Event())
 		fmt.Println()
 	}
 
-	if h._isBeforeExecuteSleep {
-		time.Sleep(h._delay)
+	if h.isBeforeExecuteSleep {
+		time.Sleep(h.delay)
 	}
 
-	if h._isPanicOnExecute {
-		if !h._isPanicFromGoroutine {
-			panic(errors.New(h._event + ":Panic in Execute"))
+	if h.isPanicOnExecute {
+		if !h.isPanicFromGoroutine {
+			panic(errors.New(h.event + ":Panic in Execute"))
 		} else {
 			go func() {
-				panic(errors.New(h._event + ":" + h._name + ":Panic in Execute inside of goroutine."))
+				panic(errors.New(h.event + ":" + h.name + ":Panic in Execute inside of goroutine."))
 			}()
 		}
 	}
@@ -170,46 +169,45 @@ func (h *FakeHandler2) Execute(args ... interface{}) error {
 		}
 	}
 
-	h._isExecuteFired = true
+	h.isExecuteFired = true
 
 	time.Sleep(time.Microsecond * 500)
 
-	if h._isAfterExecuteSleep {
-		time.Sleep(h._delay)
+	if h.isAfterExecuteSleep {
+		time.Sleep(h.delay)
 	}
 
-	//fmt.Printf("--> %s : %s Args after changes %d\n", h._name, h.Event(), args)
-	h._argsChanges = make([]interface{}, len(args))
+	h.argsChanges = make([]interface{}, len(args))
 	for i, arg := range args {
-		h._argsChanges[i] = reflect.Indirect(reflect.ValueOf(arg)).Interface()
+		h.argsChanges[i] = reflect.Indirect(reflect.ValueOf(arg)).Interface()
 	}
 
 	return nil
 }
 func (h *FakeHandler2) OnSubscribe() {
 
-	if h._isPanicOnOnSubscribe {
-		if !h._isPanicFromGoroutine {
-			panic(errors.New(h._event + ":Panic in OnSubscribe"))
+	if h.isPanicOnOnSubscribe {
+		if !h.isPanicFromGoroutine {
+			panic(errors.New(h.event + ":Panic in OnSubscribe"))
 		} else {
 			go func() {
-				panic(errors.New(h._event + ":" + h._name + ":Panic in OnSubscribe inside of goroutine."))
+				panic(errors.New(h.event + ":" + h.name + ":Panic in OnSubscribe inside of goroutine."))
 			}()
 		}
 	}
 
-	h._isOnSubscribeFired = true
+	h.isOnSubscribeFired = true
 }
 func (h *FakeHandler2) OnUnsubscribe() {
-	if h._isPanicOnOnUnsubscribe {
-		if !h._isPanicFromGoroutine {
-			panic(errors.New(h._event + ":Panic in OnUnsubscribe"))
+	if h.isPanicOnOnUnsubscribe {
+		if !h.isPanicFromGoroutine {
+			panic(errors.New(h.event + ":Panic in OnUnsubscribe"))
 		} else {
 			go func() {
-				panic(errors.New(h._event + ":" + h._name + ":Panic in OnUnsubscribe inside of goroutine."))
+				panic(errors.New(h.event + ":" + h.name + ":Panic in OnUnsubscribe inside of goroutine."))
 			}()
 		}
 	}
 
-	h._isOnUnsubscribeFired = true
+	h.isOnUnsubscribeFired = true
 }

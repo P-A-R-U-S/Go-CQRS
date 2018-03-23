@@ -1,4 +1,4 @@
-# CQRS Pattern for Go language [![Travis-CI](https://travis-ci.org/P-A-R-U-S/Golang-CQRS.svg?branch=master)](https://travis-ci.org/P-A-R-U-S/Golang-CQRS)  [![License](https://img.shields.io/dub/l/vibe-d.svg)](https://opensource.org/licenses/MIT)
+# CQRS Pattern for Go language [![License](https://img.shields.io/dub/l/vibe-d.svg)](https://opensource.org/licenses/MIT) [![Travis-CI](https://travis-ci.org/P-A-R-U-S/Golang-CQRS.svg?branch=master)](https://travis-ci.org/P-A-R-U-S/Golang-CQRS) [![Go Report Card](https://goreportcard.com/badge/github.com/P-A-R-U-S/Golang-CQRS)](https://goreportcard.com/report/github.com/P-A-R-U-S/Golang-CQRS)
 
 ## Getting Started
 
@@ -12,10 +12,6 @@ Project contains following parts:
 const ExampleEvent = "_EventExample"
 
 type ExampleHandler1 struct {
-	_name, _event string
-	_isOnSubscribeFired, _isOnUnsubscribeFired, _isExecuteFired bool
-	_isPanicOnEvent, _isPanicOnOnSubscribe, _isPanicOnOnUnsubscribe, _isPanicOnExecute bool
-	_isDisableMessage bool
 }
 
 func (h *ExampleHandler1) Event() string {
@@ -50,7 +46,7 @@ func main()  {
 
 	eventBus.Publish(ExampleEvent, 1, 2, "Test Message", 4.5)
 
-	eventBus.Unsubscribe(ExampleEvent)
+	defer eventBus.Unsubscribe(ExampleEvent)
 }
 ```
 
@@ -60,7 +56,7 @@ func main()  {
 
 * [Valentyn Ponomarenko](http://valentynponomarenko.com)
 
-The project intended to use as a part of part of othe project, but if you want to contribute, feel free to send pull requests!
+The project intended to use as a part of part of the project, but if you want to contribute, feel free to send pull requests!
 
 Have problems, bugs, feature ideas?
 We are using the github [issue tracker](https://github.com/P-A-R-U-S/Golang-CQRS/issues) to manage them.

@@ -1,12 +1,12 @@
 package Bus
 
 import (
+	handlers "Golang-CQRS/Handlers"
+	"errors"
 	"fmt"
+	"log"
 	"reflect"
 	"sync"
-	"errors"
-	"log"
-	handlers "Golang-CQRS/Handlers"
 )
 
 // EventBus implements publish/subscribe pattern: https://en.wikipedia.org/wiki/Publish%E2%80%93subscribe_pattern
@@ -19,7 +19,7 @@ type EventBus interface {
 // eventBus struct
 type eventBus struct {
 	mtx      sync.RWMutex
-	handlers map[string][] handlers.Handler
+	handlers map[string][]handlers.Handler
 }
 
 // Execute appropriate handlers
@@ -44,7 +44,7 @@ func (b *eventBus) Publish(eventName string, args ...interface{}) {
 						log.Printf("Panic in EventBus.Publish: %s", err)
 					}
 				}()
-				h_in_goroutine.Execute(cArgs ...)
+				h_in_goroutine.Execute(cArgs...)
 			}()
 		}
 	}
@@ -112,6 +112,6 @@ func cloneArgs(args []interface{}) []interface{} {
 // New creates new EventBus
 func New() EventBus {
 	return &eventBus{
-		handlers: make(map[string][] handlers.Handler),
+		handlers: make(map[string][]handlers.Handler),
 	}
 }

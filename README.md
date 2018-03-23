@@ -1,4 +1,4 @@
-# CQRS Pattern for Go language [![License](https://img.shields.io/dub/l/vibe-d.svg)](https://opensource.org/licenses/MIT) [![Travis-CI](https://travis-ci.org/P-A-R-U-S/Golang-CQRS.svg?branch=master)](https://travis-ci.org/P-A-R-U-S/Golang-CQRS) [![Go Report Card](https://goreportcard.com/badge/github.com/P-A-R-U-S/Golang-CQRS)](https://goreportcard.com/report/github.com/P-A-R-U-S/Golang-CQRS)
+# CQRS Pattern for Go language [![License](https://img.shields.io/dub/l/vibe-d.svg)](https://opensource.org/licenses/MIT) [![Go Report Card](https://goreportcard.com/badge/github.com/P-A-R-U-S/Golang-CQRS)](https://goreportcard.com/report/github.com/P-A-R-U-S/Golang-CQRS) [![Travis-CI](https://travis-ci.org/P-A-R-U-S/Golang-CQRS.svg?branch=master)](https://travis-ci.org/P-A-R-U-S/Golang-CQRS)
 
 ## Getting Started
 

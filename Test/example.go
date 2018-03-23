@@ -4,28 +4,28 @@ import (
 	"fmt"
 )
 
-const ExampleEvent = "_EventExample"
+const exampleEvent = "_EventExample"
 
-type ExampleHandler1 struct {
+type exampleHandler1 struct {
 
 }
 
-func (h *ExampleHandler1) Event() string {
+func (h *exampleHandler1) Event() string {
 
-	return ExampleEvent
+	return exampleEvent
 }
 
-func (h *ExampleHandler1) Execute(... interface{}) error {
+func (h *exampleHandler1) Execute(... interface{}) error {
 
 	fmt.Println("Run Execute...")
 
 	return nil
 }
 
-func (h *ExampleHandler1) OnSubscribe() {
+func (h *exampleHandler1) OnSubscribe() {
 	fmt.Println("Run OnSubscribe...")
 }
 
-func (h *ExampleHandler1) OnUnsubscribe() {
+func (h *exampleHandler1) OnUnsubscribe() {
 	fmt.Println("Run OnUnsubscribe...")
 }

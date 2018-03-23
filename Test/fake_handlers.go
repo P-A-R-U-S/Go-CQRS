@@ -7,10 +7,10 @@ import (
 	"reflect"
 )
 
-const EventFake1 = "_EventFake1"
-const EventFake2 = "_EventFake2"
+const eventFake1 = "_EventFake1"
+const eventFake2 = "_EventFake2"
 
-type FakeHandler1 struct {
+type fakeHandler1 struct {
 	name, event                                                                    string
 	isOnSubscribeFired, isOnUnsubscribeFired, isExecuteFired                       bool
 	isPanicFromGoroutine                                                           bool
@@ -20,7 +20,7 @@ type FakeHandler1 struct {
 	argsChanges                                                                    []interface{}
 }
 
-func (h *FakeHandler1) Event() string {
+func (h *fakeHandler1) Event() string {
 	if h.isPanicOnEvent {
 		if !h.isPanicFromGoroutine {
 			panic(errors.New(h.event + ":Panic in Event"))
@@ -36,9 +36,9 @@ func (h *FakeHandler1) Event() string {
 	}
 
 
-	return EventFake1
+	return eventFake1
 }
-func (h *FakeHandler1) Execute(args ... interface{}) error {
+func (h *fakeHandler1) Execute(args ... interface{}) error {
 	//fmt.Printf("--> %s : %s Args before changes %d\n", h.name, h.Event(), args)
 
 	if h.isBeforeExecuteSleep {
@@ -83,7 +83,7 @@ func (h *FakeHandler1) Execute(args ... interface{}) error {
 
 	return nil
 }
-func (h *FakeHandler1) OnSubscribe() {
+func (h *fakeHandler1) OnSubscribe() {
 
 	if h.isPanicOnOnSubscribe {
 		if !h.isPanicFromGoroutine {
@@ -97,7 +97,7 @@ func (h *FakeHandler1) OnSubscribe() {
 
 	h.isOnSubscribeFired = true
 }
-func (h *FakeHandler1) OnUnsubscribe() {
+func (h *fakeHandler1) OnUnsubscribe() {
 
 	if h.isPanicOnOnUnsubscribe {
 		if !h.isPanicFromGoroutine {
@@ -113,7 +113,7 @@ func (h *FakeHandler1) OnUnsubscribe() {
 }
 
 
-type FakeHandler2 struct {
+type fakeHandler2 struct {
 	name, event                                                                    string
 	isOnSubscribeFired, isOnUnsubscribeFired, isExecuteFired                       bool
 	isPanicFromGoroutine                                                           bool
@@ -123,7 +123,7 @@ type FakeHandler2 struct {
 	argsChanges                                                                    []interface{}
 }
 
-func (h *FakeHandler2) Event() string {
+func (h *fakeHandler2) Event() string {
 
 	if h.isPanicOnEvent {
 		if !h.isPanicFromGoroutine {
@@ -141,7 +141,7 @@ func (h *FakeHandler2) Event() string {
 
 	return ""
 }
-func (h *FakeHandler2) Execute(args ... interface{}) error {
+func (h *fakeHandler2) Execute(args ... interface{}) error {
 	//fmt.Printf("--> %s : %s Args before changes %d\n", h.name, h.Event(), args)
 
 	if !h.isDisableMessage {
@@ -184,7 +184,7 @@ func (h *FakeHandler2) Execute(args ... interface{}) error {
 
 	return nil
 }
-func (h *FakeHandler2) OnSubscribe() {
+func (h *fakeHandler2) OnSubscribe() {
 
 	if h.isPanicOnOnSubscribe {
 		if !h.isPanicFromGoroutine {
@@ -198,7 +198,7 @@ func (h *FakeHandler2) OnSubscribe() {
 
 	h.isOnSubscribeFired = true
 }
-func (h *FakeHandler2) OnUnsubscribe() {
+func (h *fakeHandler2) OnUnsubscribe() {
 	if h.isPanicOnOnUnsubscribe {
 		if !h.isPanicFromGoroutine {
 			panic(errors.New(h.event + ":Panic in OnUnsubscribe"))

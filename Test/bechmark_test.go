@@ -14,12 +14,12 @@ func Benchmark_EventBus_Publish(b *testing.B)  {
 
 	for i := 0; i < b.N; i++ {
 
-		handler1 := &FakeHandler1 {
+		handler1 := &fakeHandler1 {
 			event:            "Event" + strconv.Itoa(int( i / 10)) ,
 			isDisableMessage: true,
 		}
 
-		handler2 := &FakeHandler2{}
+		handler2 := &fakeHandler2{}
 
 		eventBus.Subscribe(handler1)
 		eventBus.Subscribe(handler2)

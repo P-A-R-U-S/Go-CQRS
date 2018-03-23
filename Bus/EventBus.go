@@ -35,7 +35,7 @@ func (b *eventBus) Publish(eventName string, args ...interface{}) {
 
 			// In case of Closure "h" variable will be reassigned before ever executed by goroutine.
 			// Because if this you need to save value into variable and use this variable in closure.
-			h_in_goroutine := h
+			handler := h
 
 			go func() {
 				//Handle Panic in Handler.Execute.
@@ -44,7 +44,7 @@ func (b *eventBus) Publish(eventName string, args ...interface{}) {
 						log.Printf("Panic in EventBus.Publish: %s", err)
 					}
 				}()
-				h_in_goroutine.Execute(cArgs...)
+				handler.Execute(cArgs...)
 			}()
 		}
 	}

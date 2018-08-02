@@ -5,7 +5,6 @@
 Project distributed as open-source example and you can can copy and modify code snippet based on you need or requirements.
 Project contains following parts:
 
-
 ### Create handler(s)
 
 ```GO
